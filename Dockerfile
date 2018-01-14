@@ -1,6 +1,6 @@
 FROM ruby:2.5.0
 
-RUN apt-get update && apt-get install -y nodejs mysql-client postgresql-client sqlite3 ---no-install-recommends && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y nodejs mysql-client postgresql-client sqlite3 --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # install chrome headless
 RUN apt-get install -y libappindicator1 fonts-liberation
