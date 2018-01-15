@@ -3,22 +3,20 @@ FROM ruby:2.5.0
 RUN apt-get update && apt-get install -y nodejs mysql-client postgresql-client sqlite3 --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # install chrome headless
-RUN apt-get install -y udev ttf-freefont chromium chromium-chromedriver && rm -rf /var/lib/apt/lists/*
+RUN set -xe \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl socat \
+    && apt-get install -y --no-install-recommends xvfb x11vnc fluxbox xterm \
+    && apt-get install -y --no-install-recommends sudo \
+    && apt-get install -y --no-install-recommends supervisor \
+    && rm -rf /var/lib/apt/lists/*
 
-# 日本語フォント
-RUN mkdir /noto
-ADD https://noto-website.storage.googleapis.com/pkgs/NotoSansCJKjp-hinted.zip /noto 
-WORKDIR /noto
-
-RUN unzip NotoSansCJKjp-hinted.zip && \
-    mkdir -p /usr/share/fonts/noto && \
-    cp *.otf /usr/share/fonts/noto && \
-    chmod 644 -R /usr/share/fonts/noto/ && \
-    fc-cache -fv
-
-WORKDIR /
-RUN rm -rf /noto
-
+RUN set -xe \
+    && curl -fsSL https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV RAILS_VERSION 5.1.4
 
