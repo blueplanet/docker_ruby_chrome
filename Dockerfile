@@ -5,9 +5,7 @@ RUN apt-get update && apt-get install -y nodejs mysql-client postgresql-client s
 # install chrome headless
 RUN set -xe \
     && apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl socat \
-    && apt-get install -y --no-install-recommends xvfb x11vnc fluxbox xterm \
-    && apt-get install -y --no-install-recommends sudo \
+    && apt-get install -y --no-install-recommends ca-certificates curl socat xvfb x11vnc fluxbox xterm \
     && apt-get install -y --no-install-recommends supervisor \
     && rm -rf /var/lib/apt/lists/*
 
@@ -18,6 +16,19 @@ RUN set -xe \
     && apt-get install -y google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
 
+# Set up Chromedriver Environment variables
+ENV CHROMEDRIVER_VERSION 2.35
+ENV CHROMEDRIVER_DIR /chromedriver
+RUN mkdir $CHROMEDRIVER_DIR
+
+# Download and install Chromedriver
+RUN wget -q --continue -P $CHROMEDRIVER_DIR "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+RUN unzip $CHROMEDRIVER_DIR/chromedriver* -d $CHROMEDRIVER_DIR
+
+# Put Chromedriver into the PATH
+ENV PATH $CHROMEDRIVER_DIR:$PATH
+
+# Rails
 ENV RAILS_VERSION 5.1.4
 
 RUN gem install rails --version "$RAILS_VERSION"
